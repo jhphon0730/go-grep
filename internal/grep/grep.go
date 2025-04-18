@@ -5,6 +5,8 @@ import (
 	"strings"
 	"bufio"
 	"os"
+
+	"github.com/jhphon0730/go-grep/internal/utils"
 )
 
 type Grepper interface {
@@ -51,7 +53,7 @@ func (g *grepper) GrepFile(path string, f os.FileInfo, err error) error {
 	if g.Options.Ext != "" && !strings.HasSuffix(path, g.Options.Ext) {
 		return nil
 	}
-	if strings.Contains(path, ".git") || strings.Contains(path, "node_modules") || strings.Contains(path, "vendor") {
+	if utils.ShouldSkipPath(path) {
 		return nil
 	}
 
