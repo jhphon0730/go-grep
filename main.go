@@ -1,4 +1,8 @@
+// Grep CLI Tool
+// Grep-GREp-GREP-grep-greP
+
 package main
+
 import (
 	"flag"
 	"fmt"

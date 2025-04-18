@@ -19,11 +19,11 @@ type Match struct {
 }
 
 func CreateRegexp(options Options, pattern string) *regexp.Regexp {
-	if options.IgnoreCase {
-		pattern = "(?i)" + pattern
-	}
 	if options.WordMatch {
 		pattern = "\\b" + pattern + "\\b"
+	}
+	if options.IgnoreCase {
+		pattern = "(?i)" + pattern
 	}
 	return regexp.MustCompile(pattern)
 }
