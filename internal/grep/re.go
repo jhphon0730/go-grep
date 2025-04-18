@@ -5,8 +5,10 @@ import (
 )
 
 type Options struct {
+	Pattern string
 	Ext string
-	Line bool
+	LineNumber bool
+	IgnoreCase bool
 }
 
 type Match struct {
@@ -18,6 +20,10 @@ type Match struct {
 
 func CreateRegexp(options Options, pattern string) *regexp.Regexp {
 	flags := ""
+
+	if options.IgnoreCase {
+		flags += "(?i)"
+	}
 
 	re := regexp.MustCompile(flags + pattern)
 	return re
