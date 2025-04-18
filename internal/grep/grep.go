@@ -9,6 +9,8 @@ import (
 
 type Grepper interface {
 	GetGreps() []Match
+	GetPattern() string
+	GetOptions() *Options
 	GrepFile(path string, f os.FileInfo, err error) (error)
 	GrepFiles() ([]Match, error)
 }
@@ -27,8 +29,16 @@ func NewGrep(pattern string, options Options) Grepper {
 	}
 }
 
+func (g *grepper) GetPattern() string {
+	return g.pattern
+}
+
 func (g *grepper) GetGreps() []Match {
 	return g.greps
+}
+
+func (g *grepper) GetOptions() *Options {
+	return &g.Options
 }
 
 func (g *grepper) GrepFile(path string, f os.FileInfo, err error) error {

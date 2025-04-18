@@ -10,6 +10,7 @@ import (
 
 func main() {
 	ext := flag.String("ext", "", "파일 확장자 필터 (예: .go, .txt)")
+	line := flag.Bool("line", false, "라인 번호 출력")
 	flag.Parse()
 
 	args := flag.Args()
@@ -18,18 +19,21 @@ func main() {
 	}
 	pattern := args[0]
 
-	opts := grep.Options{
+	g := grep.NewGrep(pattern, grep.Options{
 		Ext: *ext,
-	}
-
-	g := grep.NewGrep(pattern, opts)
+		Line: *line,
+	})
 
 	matches, err := g.GrepFiles()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	for _, m := range matches {
-		fmt.Printf("%s:%d: %s\n", m.FileName, m.LineNum, m.LineText)
+	for _, match := range matches {
+		if g.GetOptions().Line {
+			fmt.Println(match.FileName + ":", match.LineNum, match.LineText)
+		} else {
+			fmt.Println(match.FileName, match.LineText)
+		}
 	}
 }

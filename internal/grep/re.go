@@ -6,6 +6,7 @@ import (
 
 type Options struct {
 	Ext string
+	Line bool
 }
 
 type Match struct {
