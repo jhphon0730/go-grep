@@ -9,17 +9,16 @@ import (
 )
 
 func main() {
+	pattern := flag.String("pattern", "", "검색할 패턴")
 	ext := flag.String("ext", "", "파일 확장자 필터 (예: .go, .txt)")
 	line := flag.Bool("line", false, "라인 번호 출력")
 	flag.Parse()
 
-	args := flag.Args()
-	if len(args) < 1 {
+	if *pattern == "" {
 		log.Fatal("Usage: gitgrep-lite [options] <pattern> [-- pathspecs...]")
 	}
-	pattern := args[0]
 
-	g := grep.NewGrep(pattern, grep.Options{
+	g := grep.NewGrep(*pattern, grep.Options{
 		Ext: *ext,
 		Line: *line,
 	})
