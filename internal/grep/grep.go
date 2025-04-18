@@ -1,20 +1,11 @@
 package grep
 
 import (
-	"bufio"
 	"path/filepath"
+	"strings"
+	"bufio"
 	"os"
 )
-
-type Options struct {
-}
-
-type Match struct {
-	FileName  string
-	LineNum   int
-	LineText  string
-	MatchText string // optional: 색상 강조용
-}
 
 type Grepper interface {
 	GetGreps() []Match
@@ -45,6 +36,9 @@ func (g *grepper) GrepFile(path string, f os.FileInfo, err error) error {
 		return err
 	}
 	if f.IsDir() {
+		return nil
+	}
+	if g.Options.Ext != "" && !strings.HasSuffix(path, g.Options.Ext) {
 		return nil
 	}
 
