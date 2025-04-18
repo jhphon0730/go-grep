@@ -51,6 +51,9 @@ func (g *grepper) GrepFile(path string, f os.FileInfo, err error) error {
 	if g.Options.Ext != "" && !strings.HasSuffix(path, g.Options.Ext) {
 		return nil
 	}
+	if strings.Contains(path, ".git") || strings.Contains(path, "node_modules") || strings.Contains(path, "vendor") {
+		return nil
+	}
 
 	file, err := os.Open(path)
 	if err != nil {
