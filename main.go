@@ -1,10 +1,10 @@
 package main
-
 import (
 	"flag"
 	"fmt"
 	"log"
 
+	"github.com/jhphon0730/go-grep/internal/utils"
 	"github.com/jhphon0730/go-grep/internal/grep"
 )
 
@@ -32,10 +32,14 @@ func main() {
 	}
 
 	for _, match := range matches {
+		text := utils.Highlight(match.LineText, match.MatchText)
+		filename := utils.Colorize(match.FileName, utils.ColorBlue)
+
 		if g.GetOptions().LineNumber {
-			fmt.Printf("%s:%d:%s\n", match.FileName, match.LineNum, match.LineText)
+			linenum := utils.Colorize(utils.IntToStr(match.LineNum), utils.ColorGreen)
+			fmt.Printf("%s:%s:%s\n", filename, linenum, text)
 		} else {
-			fmt.Printf("%s:%s\n", match.FileName, match.LineText)
+			fmt.Printf("%s:%s\n", filename, text)
 		}
 	}
 }
