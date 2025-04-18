@@ -12,6 +12,7 @@ func main() {
 	ext := flag.String("ext", "", "파일 확장자 필터 (예: .go, .txt)")
 	line_number := flag.Bool("line-number", false, "라인 번호 출력")
 	ignoreCase := flag.Bool("ignore-case", false, "대소문자 무시")
+	word_match := flag.Bool("word-match", false, "단어 단위로 매칭")
 
 	flag.Parse()
 
@@ -24,6 +25,7 @@ func main() {
 		Ext: *ext,
 		LineNumber: *line_number,
 		IgnoreCase: *ignoreCase,
+		WordMatch: *word_match,
 	})
 
 	matches, err := g.GrepFiles()

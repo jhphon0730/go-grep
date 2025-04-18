@@ -5,10 +5,10 @@ import (
 )
 
 type Options struct {
-	Pattern string
 	Ext string
 	LineNumber bool
 	IgnoreCase bool
+	WordMatch bool
 }
 
 type Match struct {
@@ -19,12 +19,11 @@ type Match struct {
 }
 
 func CreateRegexp(options Options, pattern string) *regexp.Regexp {
-	flags := ""
-
 	if options.IgnoreCase {
-		flags += "(?i)"
+		pattern = "(?i)" + pattern
 	}
-
-	re := regexp.MustCompile(flags + pattern)
-	return re
+	if options.WordMatch {
+		pattern = "\\b" + pattern + "\\b"
+	}
+	return regexp.MustCompile(pattern)
 }
