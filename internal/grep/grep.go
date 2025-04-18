@@ -2,8 +2,8 @@ package grep
 
 import (
 	"bufio"
+	"path/filepath"
 	"os"
-	"regexp"
 )
 
 type Options struct {
@@ -17,48 +17,68 @@ type Match struct {
 }
 
 type Grepper interface {
-	GrepFile(filename string, pattern string) ([]Match, error)
-	GrepFiles(files []string, pattern string) ([]Match, error)
+	GetGreps() []Match
+	GrepFile(path string, f os.FileInfo, err error) (error)
+	GrepFiles() ([]Match, error)
 }
 
 type grepper struct {
+	pattern string
+	greps []Match
 	Options Options
 }
 
-func NewGrep(options Options) Grepper {
-	return grepper{
+func NewGrep(pattern string, options Options) Grepper {
+	return &grepper{
+		pattern: pattern,
+		greps: []Match{},
 		Options: options,
 	}
 }
 
-func (g grepper) GrepFile(filename string, pattern string) ([]Match, error) {
-	file, err := os.Open(filename)
+func (g *grepper) GetGreps() []Match {
+	return g.greps
+}
+
+func (g *grepper) GrepFile(path string, f os.FileInfo, err error) error {
 	if err != nil {
-		return nil, err
+		return err
+	}
+	if f.IsDir() {
+		return nil
+	}
+
+	file, err := os.Open(path)
+	if err != nil {
+		return err
 	}
 	defer file.Close()
 
-	var matches []Match
 	scanner := bufio.NewScanner(file)
-	flags := ""
-
-	re := regexp.MustCompile(flags + pattern)
 	line_number := 0
+	re := CreateRegexp(g.Options, g.pattern)
 
 	for scanner.Scan() {
 		line := scanner.Text()
 		if re.MatchString(line) {
-			matches = append(matches, Match{
-				FileName:  filename,
+			g.greps = append(g.greps, Match{
+				FileName:  path,
 				LineNum:   line_number,
 				LineText:  line,
 				MatchText: re.FindString(line),
 			})
 		}
-		line_number ++
+		line_number++
 	}
 
-	return matches, nil
+	return nil
 }
 
-func (g grepper) GrepFiles(files []string, pattern string) ([]Match, error) {}
+func (g *grepper) GrepFiles() ([]Match, error) {
+	g.greps = []Match{}
+	if err := filepath.Walk(".", g.GrepFile); err != nil {
+		return nil, err
+	}
+
+	return g.greps, nil
+}
