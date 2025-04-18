@@ -1,7 +1,12 @@
 package grep
 
+import (
+	"bufio"
+	"os"
+	"regexp"
+)
+
 type Options struct {
-	WordMatch  bool
 }
 
 type Match struct {
@@ -26,6 +31,34 @@ func NewGrep(options Options) Grepper {
 	}
 }
 
-func (g grepper) GrepFile(filename string, pattern string) ([]Match, error) { }
+func (g grepper) GrepFile(filename string, pattern string) ([]Match, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
 
-func (g grepper) GrepFiles(files []string, pattern string) ([]Match, error) { }
+	var matches []Match
+	scanner := bufio.NewScanner(file)
+	flags := ""
+
+	re := regexp.MustCompile(flags + pattern)
+	line_number := 0
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		if re.MatchString(line) {
+			matches = append(matches, Match{
+				FileName:  filename,
+				LineNum:   line_number,
+				LineText:  line,
+				MatchText: re.FindString(line),
+			})
+		}
+		line_number ++
+	}
+
+	return matches, nil
+}
+
+func (g grepper) GrepFiles(files []string, pattern string) ([]Match, error) {}
