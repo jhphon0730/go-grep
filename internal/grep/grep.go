@@ -19,7 +19,8 @@ type Grepper interface {
 
 type grepper struct {
 	pattern string
-	greps []Match
+	greps []Match // * 매칭 된 파일 및 라인 정보
+
 	Options Options
 }
 
